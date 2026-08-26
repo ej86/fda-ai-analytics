@@ -4,7 +4,8 @@
 > 
 
 <aside>
-#### 💡Project Overview
+    
+#### 💡 Project Overview
 
 **Scope: FDA Approved AI Medical Device Trend & Emerging Signal Analysis**
 
