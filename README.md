@@ -217,7 +217,7 @@ This suggests that Product Code-level activity should be evaluated together with
 
 Combine FDA regulatory activity with external market, adoption, clinical workflow, and competitive data to evaluate whether these signals translate into meaningful product opportunities.
 
-#### Click to view Pipeline Source Code (Python)
+#### View Pipeline Source Code (Python)
 
 - STEP 1: Data Ingestion, Cleaning & Relational Integration
     
