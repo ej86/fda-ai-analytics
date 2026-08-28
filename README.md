@@ -182,7 +182,7 @@ Four Product Codes met the predefined criteria for recent-emerging activity:
 > - competitive intensity
 > - product success
 
-(FDA%20AI%20ML%20Medical%20Device%20Activity%20Identifying%20Emer/Screenshot_2026-08-28_at_10.04.48_PM.png)<img width="1507" height="881" alt="Screenshot_2026-08-28_at_10 04 48_PM" src="https://github.com/user-attachments/assets/c19b58cb-e8c7-4165-acd2-80e134ca5270" />
+<img width="1507" height="881" alt="Screenshot_2026-08-28_at_10 04 48_PM" src="https://github.com/user-attachments/assets/c19b58cb-e8c7-4165-acd2-80e134ca5270" />
 
 
 The dashboard summarizes the observed activity trend, specialty concentration, recent-emerging signals, and their 2021–2025 trajectories.
