@@ -1,3 +1,4 @@
+<img width="1507" height="881" alt="Screenshot_2026-08-28_at_10 04 48_PM" src="https://github.com/user-attachments/assets/29e4f047-5eed-4217-a10f-eff072a111ba" />
 # FDA AI/ML Medical Device Activity: Identifying Emerging Signals Beyond Radiology
 
 > Analyzing FDA regulatory activity to identify recent and emerging product-code signals across clinical specialties
@@ -188,7 +189,8 @@ The dashboard summarizes the observed activity trend, specialty concentration, r
 
 ## 4. Product & Business Opportunities
 
-### 1. Prioritize Non-Radiology Signals for Further Investigation
+### 1. Prioritize Non-Radiology Signals for Further Investigation![Uploading Screenshot_2026-08-28_at_10.04.48_PM.png…]()
+
 
 The observed concentration in Radiology suggests that Product Codes outside the dominant specialty may warrant separate investigation rather than being overlooked in aggregate-level analysis.
 
