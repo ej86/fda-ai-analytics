@@ -1,4 +1,3 @@
-<img width="1507" height="881" alt="Screenshot_2026-08-28_at_10 04 48_PM" src="https://github.com/user-attachments/assets/29e4f047-5eed-4217-a10f-eff072a111ba" />
 # FDA AI/ML Medical Device Activity: Identifying Emerging Signals Beyond Radiology
 
 > Analyzing FDA regulatory activity to identify recent and emerging product-code signals across clinical specialties
@@ -183,7 +182,8 @@ Four Product Codes met the predefined criteria for recent-emerging activity:
 > - competitive intensity
 > - product success
 
-![FDA AI Device Acceleration Chart](FDA%20AI%20ML%20Medical%20Device%20Activity%20Identifying%20Emer/Screenshot_2026-08-28_at_10.04.48_PM.png)
+![FDA AI Device Acceleration Chart](FDA%20AI%20ML%20Medical%20Device%20Activity%20Identifying%20Emer/Screenshot_2026-08-28_at_10.04.48_PM.png)<img width="1507" height="881" alt="Screenshot_2026-08-28_at_10 04 48_PM" src="https://github.com/user-attachments/assets/c19b58cb-e8c7-4165-acd2-80e134ca5270" />
+
 
 The dashboard summarizes the observed activity trend, specialty concentration, recent-emerging signals, and their 2021–2025 trajectories.
 
