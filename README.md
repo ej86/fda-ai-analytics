@@ -1,109 +1,229 @@
-# Identifying Emerging Signals and Growth Acceleration in FDA-Approved AI Medical Devices
+# FDA AI/ML Medical Device Activity: Identifying Emerging Signals Beyond Radiology
 
-> Quantifying shift from saturated radiological AI to high-acceleration clinical specialties across 900+ FDA approvals
+> Analyzing FDA regulatory activity to identify recent and emerging product-code signals across clinical specialties
 > 
 
 <aside>
-    
+
 #### 💡 Project Overview
 
-**Scope: FDA Approved AI Medical Device Trend & Emerging Signal Analysis**
+**Scope:** FDA AI/ML Medical Device Activity & Emerging Signal Analysis
 
-**Data Source: FDA AI-Enabled Medical Devices Database & FOICLASS Product Code Master**
+**Data Sources:** FDA AI-Enabled Medical Devices Database & FOICLASS Product Code Master
 
-**Dataset: 900+ FDA-cleared AI medical device records matched with FOICLASS master data**
+**Dataset:** 1,524 FDA AI/ML device records
 
-**Tools**: Python · Pandas · RegEx
+**Tools:** Python · Pandas · RegEx · Plotly
 
 **KEY FINDING**
 
-Radiology dominates the market with **76.6%** of total AI clearances, but **Gastroenterology (`QNP`)**, **Neurology (`OLZ`)**, and **Orthopedics (`SBF`)** recorded the highest activity acceleration during 2023–2025.
+Radiology accounts for **76.7%** of records with an assigned medical specialty. Product Code-level analysis identified **QNP, OLZ, QYE, and SBF** as recent-emerging activity signals, which were subsequently validated through 2021–2025 activity trajectories.
 
 **APPROACH**
 
-**Enforced strict data integrity** by using many-to-one merge validation to prevent row duplication, isolating partial 2026 data, and applying multi-year windowing *(3-year vs. 5-year)* to validate robustness.
+Validated Product Code integrity and dataset joins, excluded incomplete 2026 data, compared recent activity across defined time windows, and validated emerging signals through multi-year trajectories.
 
 **QUESTION** 
 
-Which medical device product codes show the highest growth acceleration beyond radiology, and where are the strategic opportunities for next-generation AI medical devices?
+Beyond the dominant Radiology category, which Product Codes show meaningful recent FDA activity, and do those signals persist across multiple completed years?
 
-**Links**:[Google Colab Notebook](https://colab.research.google.com/drive/1cMLTit-60v9UJbse-iJIyx0EUE_iVF-1?usp=sharing)] | [Notion](https://app.notion.com/p/Identifying-Emerging-Signals-and-Growth-Acceleration-in-FDA-Approved-AI-Medical-Devices-3c8f89a0cfc4800b9139d27630b0944f?source=copy_link)]
+**Links:** [[Google Colab Notebook](https://colab.research.google.com/drive/1cMLTit-60v9UJbse-iJIyx0EUE_iVF-1?usp=sharing)] | [[GitHub Repository](https://github.com/ej86/fda-ai-analytics)]
 
 </aside>
 
 ## 1. Problem Context
 
-The FDA AI enabled medical device market has expanded rapidly, yet approvals remain heavily concentrated in radiology. As the radiological AI market approaches saturation, identifying high-acceleration clinical sectors is critical for strategic product development and investment.
+AI/ML-enabled medical devices have expanded across clinical specialties, but regulatory activity is not evenly distributed across the dataset. Understanding where recent activity is concentrated can help identify Product Codes that warrant closer investigation beyond the largest specialty groups.
 
-**Analytical Question**: Which medical device product codes demonstrate the highest approval acceleration beyond radiology, and what clinical capabilities drive this growth?
+For this analysis, I focused on **observed FDA regulatory activity rather than market demand or commercial performance**. The goal was to determine whether Product Codes outside the dominant specialty showed meaningful and persistent recent activity, rather than simply appearing in a single high-activity year.
 
-**Scope & Analytical Boundary**:
+### **Analytical Question:**
 
-- **Market Signal Identification**: This analysis measures historical approval trends and growth acceleration to identify emerging market signals. It does not evaluate clinical efficacy or guarantee commercial success for individual devices.
-- **Partial Data Isolation**: 2026 data represents an ongoing year and is isolated from completed annual benchmarks (2023–2025) to avoid rate-skewing and temporal bias.
+Beyond the dominant specialty, which FDA Product Codes show meaningful recent activity, and do those signals persist across multiple completed years?
+
+### **Scope & Analytical Boundary:**
+
+This analysis measures **FDA record activity** associated with AI/ML-enabled medical devices. It does not measure:
+
+- physician or hospital adoption
+- market size or revenue
+- clinical effectiveness or patient outcomes
+- procurement or utilization
+- competitive intensity
+- commercial opportunity
+
+Therefore, an increase in FDA records is interpreted as a **regulatory activity signal**, not as evidence of market growth or product success.
+
+### Time Boundary:
+
+The dataset contains records through 2026, but 2026 is an incomplete year. To avoid comparing a partial year with completed annual periods, all year-based comparisons in the analysis use **completed years through 2025**.
 
 ## 2. Data Preparation & Analytical Pipeline
 
-**Step 1: Data Ingestion & Data Integrity Validation**
-Merged FDA AI/ML approval records with FOICLASS master data. Validated product code uniqueness prior to joining to enforce a strict `many_to_one` relationship, eliminating data duplication and row leakage.
+The analysis was structured as a validation-first pipeline to ensure that downstream activity metrics were calculated from a consistent and traceable dataset.
 
-**Step 2: Time-Window Segmentation & Robustness Checks**
-Isolated partial-year data (2026) to prevent seasonal skew. Applied 3-year (2023–2025) and 5-year (2021–2025) rolling windows to evaluate signal persistence and rule out short-term fluctuations.
+### **Step 1: Data Ingestion & Relational Integration**
 
-**Step 3: Approval Acceleration Indexing**
-Calculated historical annual baseline rates against recent annual approval rates to identify product codes experiencing exponential growth momentum.
+Combined the FDA AI/ML device records with the FOICLASS Product Code reference data. Before joining, I validated Product Code uniqueness in the classification table to ensure that the lookup could be used as a many-to-one relationship.
+
+**Validation result**
+
+- AI/ML device records: **1,524**
+- Classification records: **7,088**
+- Unique Product Codes: **7,088**
+- Duplicate Product Codes: **0**
+- Product Code join coverage: **1,524 / 1,524 (100%)**
+
+The resulting dataset retained the FDA device records while adding standardized Product Code attributes such as medical specialty and device class.
+
+### **Step 2: Data Quality & Time Boundary**
+
+Validated completeness of the key classification fields and isolated incomplete-year records from completed-year analysis.
+
+**Classification field completeness**
+
+- Medical specialty: **10 missing (0.66%)**
+- Device class: **0 missing**
+- Generic device name: **0 missing**
+
+For annual activity analysis, records through **2025** were treated as completed-year observations. 2026 was excluded from year-over-year comparisons because it represents an incomplete year.
+
+### **Step 3: Recent Activity Signal**
+
+Compared Product Code activity across completed-year windows, focusing on the most recent three completed years (**2023–2025**).
+
+A minimum recent-activity threshold was used to reduce the influence of extremely small counts. This threshold is an **analytical rule defined for this project**, not an FDA classification.
+
+### Step 4: Robustness Check
+
+Compared recent activity using both:
+
+- **3-year window:** 2023–2025
+- **5-year window:** 2021–2025
+
+The purpose was to determine whether candidates identified from recent activity also showed evidence of activity across a broader completed-year window.
+
+### Step 5: Product Code Activity Profile
+
+Product Codes were profiled using:
+
+- total records
+- first and last observed year
+- annual activity from 2021–2025
+- recent 3-year activity
+- number of active years
+- recent activity profile
+
+Product Codes meeting the predefined recent-activity and persistence criteria were classified as **Recent-emerging signals**.
+
+### Step 6: Functional Pattern Analysis
+
+For the selected Product Codes, functional terms were explored from the wording of `generic_device_name`.
+
+These terms were treated as **keyword-based exploratory flags**, not FDA-defined categories.
+
+A device name could contain multiple flags, so the categories were not mutually exclusive.
+
+### Step 7: Emerging Signal Trajectory Validation
+
+The selected Product Codes were then examined year by year from **2021–2025**.
+
+This provided a final descriptive check of whether the observed activity was isolated to a single year or appeared across multiple completed years.
+
+### Step 8: Dashboard
+
+The final dashboard summarizes:
+
+1. Annual FDA record activity
+2. Activity concentration by medical specialty
+3. Recent-emerging Product Code activity
+4. Year-by-year trajectories of the selected signals
 
 ## 3. Key Finding
 
-### High-Acceleration AI Medical Device Classes Beyond Radiology (2023–2025)
+### Radiology dominates observed FDA activity
 
-Radiology maintains a dominant market share at **76.6%** of total FDA AI clearances. However, growth acceleration metrics reveal significant momentum in non-radiological specialties during the 2023–2025 window.
+Among the **1,423 records with an assigned medical specialty**, Radiology (RA) accounts for **1,091 records (76.7%)**. Rather than interpreting this as market share or saturation, it establishes the dominant baseline against which other Product Codes were examined.
 
-| Product Code | Device Class / Generic Name | Primary Specialty | 3-Yr Approvals (2023–2025) | Historical Annual Rate | Activity Acceleration Index |
-| --- | --- | --- | --- | --- | --- |
-| **QNP** | Gastrointestinal Lesion Software Detection System | Gastroenterology (GU) | 6 | 0.04 | **74.66** |
-| **OLZ** | Automated EEG Sleep Analyzer | Neurology (NE) | 8 | 0.12 | **65.33** |
-| **SBF** | Orthopedic Surgical Navigation AR System | Orthopedics (OR) | 7 | 0.11 | **62.22** |
+### Recent-emerging Product Code signals
+
+Four Product Codes met the predefined criteria for recent-emerging activity:
+
+| Product Code | Medical Specialty | 2021–2025 Records | Active Years | Peak Activity |
+| --- | --- | --- | --- | --- |
+| **QNP** | GU | 18 | 5 | 5 |
+| **OLZ** | NE | 7 | 5 | 2 |
+| **QYE** | CV | 5 | 3 | 3 |
+| **SBF** | NE | 5 | 2 | 4 |
 
 #### ⭕ What this shows
 
-> While radiology represents the majority of absolute approval volumes, clinical specialties like Gastroenterology (`QNP`), Neurology (`OLZ`), and Orthopedics (`SBF`) exhibit the highest growth acceleration. This indicates a shift toward real-time diagnostic support and surgical guidance tools.
+> 
+> 
+> - **QNP** shows sustained activity across all five years.
+> - **OLZ** shows persistent but low-volume activity across all five years.
+> - **QYE** shows more recent activity, reaching 3 records in 2025.
+> - **SBF** shows the strongest latest-year increase, reaching 4 records in 2025.
+> 
+> These Product Codes therefore represent **different recent activity trajectories**, rather than one uniform growth pattern.
 > 
 
 #### ❌ What this does not show
 
-> Approval acceleration measures regulatory momentum and market entry activity. It does not reflect actual commercial adoption rates, hospital procurement volumes, or clinical outcome improvements.
 > 
+> 
+> 
+> This analysis does **not** establish:
+> 
+> - market growth or market share
+> - physician or hospital adoption
+> - commercial opportunity
+> - clinical effectiveness
+> - competitive intensity
+> - product success
 
-### 📊 Visualizing Growth Acceleration Beyond Radiology
+![FDA AI Device Acceleration Chart](FDA%20AI%20ML%20Medical%20Device%20Activity%20Identifying%20Emer/Screenshot_2026-08-28_at_10.04.48_PM.png)
 
-![FDA AI Device Acceleration Chart](Identifying%20Emerging%20Signals%20and%20Growth%20Accelerati/Screenshot_2026-08-26_at_11.15.23_PM.png)
-
-*Figure 1. Comparison of 3-Year Clearance Acceleration Rates across Non-Radiological FDA Product Codes (2023–2025).*
+The dashboard summarizes the observed activity trend, specialty concentration, recent-emerging signals, and their 2021–2025 trajectories.
 
 ## 4. Product & Business Opportunities
 
-### 1. Expand Beyond Saturated Radiology: Focus on High-Acceleration Specialties
+### 1. Prioritize Non-Radiology Signals for Further Investigation
 
-- **Domain Diagnosis**: While Radiology remains heavily saturated with high regulatory competition, Gastroenterology (`QNP`) and Neurology (`OLZ`) represent high-acceleration blue ocean sectors with rapid FDA clearance momentum over the last 3 years.
-- **Potential Business Impact**: Early entry into emerging non-radiological sectors allows product teams to capture market share before competitive congestion occurs, driving higher first-mover retention.
-- **Product & Process Solution**:
-    - **Real-time Clinical Integration**: Develop SaMD (Software as a Medical Device) solutions tailored for real-time procedural workflows (e.g., live endoscopy lesion detection for `QNP` and automated EEG sleep analysis for `OLZ`).
-    - **EHR & Equipment Interoperability**: Prioritize seamless API integration with existing hospital hardware and Electronic Health Record (EHR) systems to lower adoption barriers for clinicians.
+The observed concentration in Radiology suggests that Product Codes outside the dominant specialty may warrant separate investigation rather than being overlooked in aggregate-level analysis.
+
+QNP, OLZ, QYE, and SBF provide four distinct activity profiles that could be investigated further using additional clinical, market, adoption, and competitive data.
+
+**Product implication:**
+
+For healthcare product teams, these signals could inform where to conduct deeper discovery before making product investment decisions.
 
 ---
 
-### 2. Capitalize on Surgical Navigation & AR Integration
+### 2. Match Product Strategy to Activity Trajectory
 
-- **Domain Diagnosis**: Orthopedics (`SBF`) demonstrates strong acceleration in surgical navigation and AR-assisted systems, indicating a market transition from standalone diagnostic software to integrated intraoperative execution tools.
-- **Product Solution**:
-    - **End-to-End Surgical Guidance**: Build intraoperative AR visualization software that bridges pre-operative 3D surgical planning with real-time tracking, targeting high-value orthopedic procedures.
+The four signals show different activity patterns:
+
+- **QNP:** sustained activity
+- **OLZ:** persistent low-volume activity
+- **QYE:** recent increase
+- **SBF:** latest-year increase
+
+This suggests that Product Code-level activity should be evaluated together with trajectory and absolute volume rather than relying on a single growth metric.
+
+**Next analytical step:**
+
+Combine FDA regulatory activity with external market, adoption, clinical workflow, and competitive data to evaluate whether these signals translate into meaningful product opportunities.
 
 #### Click to view Pipeline Source Code (Python)
 
 - STEP 1: Data Ingestion, Cleaning & Relational Integration
     
     ```python
+    # ==============================================================================
+    # STEP 1: Data Ingestion, Cleaning & Relational Integration
+    # ==============================================================================
+    
     import os
     import urllib.request
     import pandas as pd
@@ -374,6 +494,10 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
 - STEP 2: Core Exploratory & Regulatory Analysis
     
     ```python
+    # ==============================================================================
+    # STEP 2: Core Exploratory & Regulatory Analysis
+    # ==============================================================================
+    
     # ------------------------------------------------------------------------------
     # 1. Investigate missing medical specialty
     # ------------------------------------------------------------------------------
@@ -564,35 +688,72 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
     )
     ```
     
-- STEP 3: Emerging Activity Signal by FDA Product Code
+- STEP 3: Recent Activity and Descriptive Acceleration Analysis
+👉🏻 Purpose: Examine recent FDA activity by Product Code and quantify acceleration only where a valid historical baseline exists.
     
     ```python
+    # ==============================================================================
+    # STEP 3: Recent Activity and Descriptive Acceleration Analysis
+    # ==============================================================================
+    # Purpose:
+    # Examine recent FDA activity by Product Code and quantify acceleration
+    # only where a valid historical baseline exists.
+    #
+    # Analytical principles:
+    # - 2026 is excluded because it is an incomplete year.
+    # - Recent activity is measured across the three latest completed years:
+    #   2023–2025.
+    # - Historical annual activity is calculated using each Product Code's
+    #   own observed pre-2023 period, rather than the dataset-wide time span.
+    # - Acceleration is a descriptive activity ratio, not a measure of market
+    #   growth, adoption, clinical effectiveness, or commercial opportunity.
+    # - The final "Recent-emerging signal" classification is defined in STEP 5.
+    # ==============================================================================
+    
     # ------------------------------------------------------------------------------
-    # Analytical boundary
-    # ------------------------------------------------------------------------------
-    # 2026 is incomplete (YTD), so it is excluded from the recent-period comparison.
-    # The latest three completed years are used to avoid comparing a partial year
-    # against full-year historical periods.
+    # 1. Prepare completed-year data
     # ------------------------------------------------------------------------------
     
-    analysis_df = df_integrated[
-        df_integrated["decision_year"].notna()
-    ].copy()
+    required_columns = [
+        "product_code",
+        "submission_number",
+        "decision_year",
+        "generic_device_name",
+        "medical_specialty",
+        "device_class"
+    ]
     
-    completed_years = sorted(
-        analysis_df["decision_year"].unique()
+    missing_columns = [
+        column for column in required_columns
+        if column not in df_integrated.columns
+    ]
+    
+    if missing_columns:
+        raise KeyError(
+            f"Required columns are missing from df_integrated: {missing_columns}"
+        )
+    
+    analysis_df = df_integrated.copy()
+    analysis_df["decision_year"] = pd.to_numeric(
+        analysis_df["decision_year"],
+        errors="coerce"
     )
     
-    recent_years = completed_years[-4:-1]
+    analysis_df = analysis_df[
+        analysis_df["decision_year"].notna()
+        & (analysis_df["decision_year"] <= 2025)
+    ].copy()
     
-    historical_cutoff = recent_years[0]
+    analysis_df["decision_year"] = (
+        analysis_df["decision_year"]
+        .astype(int)
+    )
     
-    print("=== EMERGING ACTIVITY ANALYSIS WINDOW ===")
-    print(f"Recent completed years: {recent_years}")
-    print(f"Historical period: Before {historical_cutoff}")
+    recent_years = [2023, 2024, 2025]
+    historical_cutoff = 2023
     
     # ------------------------------------------------------------------------------
-    # 1. Product Code activity by period
+    # 2. Build Product Code activity profile
     # ------------------------------------------------------------------------------
     
     product_activity = (
@@ -600,10 +761,6 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         .groupby("product_code")
         .agg(
             total_records=("submission_number", "count"),
-            recent_records=(
-                "decision_year",
-                lambda x: x.isin(recent_years).sum()
-            ),
             first_year=("decision_year", "min"),
             last_year=("decision_year", "max"),
             generic_device_name=("generic_device_name", "first"),
@@ -614,7 +771,39 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
     )
     
     # ------------------------------------------------------------------------------
-    # 2. Historical activity before the recent period
+    # 3. Calculate recent activity
+    # ------------------------------------------------------------------------------
+    
+    recent_activity = (
+        analysis_df[
+            analysis_df["decision_year"].isin(recent_years)
+        ]
+        .groupby("product_code")
+        .size()
+        .rename("recent_records")
+    )
+    
+    product_activity = product_activity.merge(
+        recent_activity,
+        on="product_code",
+        how="left",
+        validate="one_to_one"
+    )
+    
+    product_activity["recent_records"] = (
+        product_activity["recent_records"]
+        .fillna(0)
+        .astype(int)
+    )
+    
+    product_activity["recent_record_share_pct"] = (
+        product_activity["recent_records"]
+        / product_activity["total_records"]
+        * 100
+    ).round(2)
+    
+    # ------------------------------------------------------------------------------
+    # 4. Calculate Product Code-specific historical activity
     # ------------------------------------------------------------------------------
     
     historical_activity = (
@@ -629,7 +818,8 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
     product_activity = product_activity.merge(
         historical_activity,
         on="product_code",
-        how="left"
+        how="left",
+        validate="one_to_one"
     )
     
     product_activity["historical_records"] = (
@@ -638,39 +828,27 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         .astype(int)
     )
     
-    # ------------------------------------------------------------------------------
-    # 3. Calculate recent activity share
-    # ------------------------------------------------------------------------------
+    # Number of completed calendar years from the Product Code's first
+    # observed year through the end of 2022.
+    product_activity["historical_years_observed"] = (
+        historical_cutoff
+        - product_activity["first_year"]
+    ).clip(lower=1)
     
-    product_activity["recent_record_share_pct"] = (
-        product_activity["recent_records"]
-        / product_activity["total_records"]
-        * 100
-    ).round(2)
-    
-    # ------------------------------------------------------------------------------
-    # 4. Calculate recent vs historical annualized activity
-    # ------------------------------------------------------------------------------
-    
-    historical_years = max(
-        historical_cutoff - analysis_df["decision_year"].min(),
-        1
-    )
-    
-    recent_year_count = len(recent_years)
-    
-    product_activity["historical_annual_rate"] = (
+    product_activity["historical_annual_rate"] = np.where(
+        product_activity["historical_records"] > 0,
         product_activity["historical_records"]
-        / historical_years
+        / product_activity["historical_years_observed"],
+        np.nan
     )
     
     product_activity["recent_annual_rate"] = (
         product_activity["recent_records"]
-        / recent_year_count
+        / len(recent_years)
     )
     
     # ------------------------------------------------------------------------------
-    # 5. Calculate activity acceleration
+    # 5. Calculate descriptive acceleration
     # ------------------------------------------------------------------------------
     
     product_activity["activity_acceleration"] = np.where(
@@ -680,27 +858,24 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         np.nan
     )
     
+    product_activity["activity_acceleration"] = (
+        product_activity["activity_acceleration"]
+        .round(2)
+    )
+    
     # ------------------------------------------------------------------------------
-    # 6. Filter for meaningful emerging activity candidates
+    # 6. Identify descriptive acceleration candidates
     # ------------------------------------------------------------------------------
     
     emerging_candidates = product_activity[
-        (
-            product_activity["recent_records"] >= 3
-        )
-        &
-        (
-            product_activity["activity_acceleration"] >= 1.5
-        )
+        product_activity["recent_records"] >= 3
+        & product_activity["activity_acceleration"].ge(1.5)
     ].copy()
     
     emerging_candidates = (
         emerging_candidates
         .sort_values(
-            [
-                "activity_acceleration",
-                "recent_records"
-            ],
+            ["activity_acceleration", "recent_records"],
             ascending=[False, False]
         )
     )
@@ -709,61 +884,91 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
     # 7. Display results
     # ------------------------------------------------------------------------------
     
-    print("\n=== EMERGING ACTIVITY SIGNAL CANDIDATES ===")
+    print("=== STEP 3: RECENT ACTIVITY AND DESCRIPTIVE ACCELERATION ===")
+    print(f"Recent completed years: {recent_years}")
+    print("Historical baseline: Product Code-specific activity before 2023")
+    
+    display_columns = [
+        "product_code",
+        "generic_device_name",
+        "medical_specialty",
+        "device_class",
+        "total_records",
+        "historical_records",
+        "recent_records",
+        "recent_record_share_pct",
+        "historical_annual_rate",
+        "recent_annual_rate",
+        "activity_acceleration",
+        "first_year",
+        "last_year"
+    ]
     
     if emerging_candidates.empty:
-    
-        print(
-            "No product codes met the predefined activity criteria."
-        )
-    
+        print("\nNo Product Codes met the descriptive acceleration criteria.")
     else:
-    
-        display_columns = [
-            "product_code",
-            "generic_device_name",
-            "medical_specialty",
-            "device_class",
-            "total_records",
-            "historical_records",
-            "recent_records",
-            "recent_record_share_pct",
-            "activity_acceleration",
-            "first_year",
-            "last_year"
-        ]
-    
+        print("\n=== DESCRIPTIVE ACCELERATION CANDIDATES ===")
         print(
-            emerging_candidates[
-                display_columns
-            ]
+            emerging_candidates[display_columns]
             .head(20)
             .to_string(index=False)
         )
+    
+    # ------------------------------------------------------------------------------
+    # 8. Analytical boundary
+    # ------------------------------------------------------------------------------
+    
+    print("\n=== ANALYTICAL BOUNDARY ===")
+    print(
+        "Activity acceleration is a descriptive comparison of observed "
+        "FDA record rates. It does not establish market growth, adoption, "
+        "clinical effectiveness, or commercial opportunity."
+    )
     ```
     
-- STEP 4: Emerging Activity Signal — Robustness Check
+- STEP 4: Recent Activity Window Sensitivity Check
+👉🏻 Purpose: Compare recent Product Code activity across 3-year and 5-year windows to assess how sensitive the observed signal is to the selected time window.
     
     ```python
-    # 2026 is excluded because it is a partial year.
-    completed_df = df_integrated[
-        df_integrated["decision_year"].notna()
-        & (df_integrated["decision_year"] <= 2025)
-    ].copy()
+    # ==============================================================================
+    # STEP 4: Recent Activity Window Sensitivity Check
+    # ==============================================================================
+    # Purpose:
+    # Compare recent Product Code activity across 3-year and 5-year windows
+    # to assess how sensitive the observed signal is to the selected time window.
+    #
+    # Analytical principles:
+    # - 2026 is excluded because it is an incomplete year.
+    # - The comparison uses fixed completed-year windows: 2023–2025 and 2021–2025.
+    # - This is a sensitivity analysis, not a statistical robustness test.
+    # - The minimum activity threshold is an analytical filter, not an FDA standard.
+    # ==============================================================================
     
     # ------------------------------------------------------------------------------
-    # Define two completed-year windows for comparison
+    # 1. Prepare completed-year data
     # ------------------------------------------------------------------------------
+    
+    completed_df = df_integrated.copy()
+    completed_df["decision_year"] = pd.to_numeric(
+        completed_df["decision_year"],
+        errors="coerce"
+    )
+    
+    completed_df = completed_df[
+        completed_df["decision_year"].notna()
+        & (completed_df["decision_year"] <= 2025)
+    ].copy()
+    
+    completed_df["decision_year"] = (
+        completed_df["decision_year"]
+        .astype(int)
+    )
     
     recent_3y = [2023, 2024, 2025]
     recent_5y = [2021, 2022, 2023, 2024, 2025]
     
-    print("=== ANALYSIS WINDOW ROBUSTNESS CHECK ===")
-    print(f"3-year window: {recent_3y}")
-    print(f"5-year window: {recent_5y}")
-    
     # ------------------------------------------------------------------------------
-    # Calculate activity metrics for each Product Code
+    # 2. Build Product Code activity profile
     # ------------------------------------------------------------------------------
     
     product_signal = (
@@ -781,10 +986,10 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
     )
     
     # ------------------------------------------------------------------------------
-    # Recent 3-year activity
+    # 3. Calculate activity in each comparison window
     # ------------------------------------------------------------------------------
     
-    recent3_counts = (
+    recent_3y_counts = (
         completed_df[
             completed_df["decision_year"].isin(recent_3y)
         ]
@@ -793,17 +998,7 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         .rename("recent_3y_records")
     )
     
-    product_signal = product_signal.merge(
-        recent3_counts,
-        on="product_code",
-        how="left"
-    )
-    
-    # ------------------------------------------------------------------------------
-    # Recent 5-year activity
-    # ------------------------------------------------------------------------------
-    
-    recent5_counts = (
+    recent_5y_counts = (
         completed_df[
             completed_df["decision_year"].isin(recent_5y)
         ]
@@ -812,20 +1007,34 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         .rename("recent_5y_records")
     )
     
-    product_signal = product_signal.merge(
-        recent5_counts,
-        on="product_code",
-        how="left"
+    product_signal = (
+        product_signal
+        .merge(
+            recent_3y_counts,
+            on="product_code",
+            how="left",
+            validate="one_to_one"
+        )
+        .merge(
+            recent_5y_counts,
+            on="product_code",
+            how="left",
+            validate="one_to_one"
+        )
     )
     
     product_signal[
         ["recent_3y_records", "recent_5y_records"]
-    ] = product_signal[
-        ["recent_3y_records", "recent_5y_records"]
-    ].fillna(0).astype(int)
+    ] = (
+        product_signal[
+            ["recent_3y_records", "recent_5y_records"]
+        ]
+        .fillna(0)
+        .astype(int)
+    )
     
     # ------------------------------------------------------------------------------
-    # Recent share of total activity
+    # 4. Calculate recent activity shares
     # ------------------------------------------------------------------------------
     
     product_signal["recent_3y_share_pct"] = (
@@ -840,31 +1049,34 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         * 100
     ).round(2)
     
+    product_signal["window_share_difference_pct"] = (
+        product_signal["recent_3y_share_pct"]
+        - product_signal["recent_5y_share_pct"]
+    ).round(2)
+    
     # ------------------------------------------------------------------------------
-    # Identify categories with meaningful recent activity
+    # 5. Apply minimum recent-activity threshold
     # ------------------------------------------------------------------------------
-    # Minimum volume is used to reduce small-base distortions.
-    # This is an analytical filter, not an FDA-defined threshold.
     
     signal_candidates = product_signal[
         product_signal["recent_3y_records"] >= 5
     ].copy()
     
-    # ------------------------------------------------------------------------------
-    # Compare 3-year and 5-year views
-    # ------------------------------------------------------------------------------
-    
-    signal_candidates["window_difference"] = (
-        signal_candidates["recent_3y_share_pct"]
-        - signal_candidates["recent_5y_share_pct"]
-    ).round(2)
-    
-    signal_candidates = signal_candidates.sort_values(
-        ["recent_3y_records", "window_difference"],
-        ascending=[False, False]
+    signal_candidates = (
+        signal_candidates
+        .sort_values(
+            ["recent_3y_records", "window_share_difference_pct"],
+            ascending=[False, False]
+        )
     )
     
-    print("\n=== PRODUCT CODES WITH MEANINGFUL RECENT ACTIVITY ===")
+    # ------------------------------------------------------------------------------
+    # 6. Display results
+    # ------------------------------------------------------------------------------
+    
+    print("=== STEP 4: RECENT ACTIVITY WINDOW SENSITIVITY CHECK ===")
+    print(f"3-year window: {recent_3y}")
+    print(f"5-year window: {recent_5y}")
     
     display_columns = [
         "product_code",
@@ -876,23 +1088,41 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         "recent_3y_share_pct",
         "recent_5y_records",
         "recent_5y_share_pct",
-        "window_difference",
+        "window_share_difference_pct",
         "first_year",
         "last_year"
     ]
     
+    print("\n=== PRODUCT CODES WITH MEANINGFUL RECENT ACTIVITY ===")
+    
+    if signal_candidates.empty:
+        print("No Product Codes met the minimum recent-activity threshold.")
+    else:
+        print(
+            signal_candidates[display_columns]
+            .head(20)
+            .to_string(index=False)
+        )
+    
+    # ------------------------------------------------------------------------------
+    # 7. Analytical boundary
+    # ------------------------------------------------------------------------------
+    
+    print("\n=== ANALYTICAL BOUNDARY ===")
     print(
-        signal_candidates[
-            display_columns
-        ]
-        .head(20)
-        .to_string(index=False)
+        "The window comparison evaluates sensitivity to the selected time "
+        "window. It does not establish statistical significance or guarantee "
+        "that an observed signal will persist."
     )
     ```
     
 - STEP 5: Product Code Activity Profile
     
     ```python
+    # ==============================================================================
+    # STEP 5: Product Code Activity Profile
+    # ==============================================================================
+    
     completed_df = df_integrated[
         df_integrated["decision_year"].notna()
         & (df_integrated["decision_year"] <= 2025)
@@ -1067,6 +1297,13 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
 👉🏻 Purpose: Examine whether Product Codes identified as recent-emerging signals show different functional characteristics from established recent activity.
     
     ```python
+    # ==============================================================================
+    # STEP 6: Functional Pattern Analysis
+    # ==============================================================================
+    # Purpose:
+    # Examine whether Product Codes identified as recent-emerging signals
+    # show different functional characteristics from established recent activity.
+    #
     # IMPORTANT:
     # - Functional terms are NOT FDA-provided categories.
     # - They are transparent keyword flags derived from generic_device_name.
@@ -1415,64 +1652,69 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
     ```
     
 - STEP 7: Emerging Signal Trajectory Validation
-👉🏻 Purpose: Validate the four Product Codes identified as "Recent-emerging signal” by examining their year-by-year FDA activity.
+👉🏻 Purpose: Validate Product Codes classified as "Recent-emerging signal" in STEP 5 by examining their year-by-year FDA activity from 2021 through 2025.
     
     ```python
-    # Important analytical boundaries:
+    # ==============================================================================
+    # STEP 7: Emerging Signal Trajectory Validation
+    # ==============================================================================
+    # Purpose:
+    # Validate Product Codes classified as "Recent-emerging signal" in STEP 5
+    # by examining their year-by-year FDA activity from 2021 through 2025.
+    #
+    # Analytical principles:
+    # - Product Codes are derived directly from the STEP 5 classification.
     # - 2026 is excluded because it is an incomplete year.
-    # - No new subjective scoring is introduced.
-    # - Activity counts represent FDA records, NOT market demand or adoption.
-    # - Low-volume Product Codes must not be interpreted as strong growth
-    #   without considering their absolute record count.
+    # - Activity counts represent observed FDA records, not market demand,
+    #   adoption, clinical effectiveness, or commercial success.
+    # - Low-volume signals are interpreted together with their absolute record counts.
     # ==============================================================================
     
     # ------------------------------------------------------------------------------
     # 1. Prepare completed-year data
     # ------------------------------------------------------------------------------
     
-    step7_df = df_integrated[
-        df_integrated["decision_year"].notna()
-        & (df_integrated["decision_year"] <= 2025)
-    ].copy()
-    
-    # ------------------------------------------------------------------------------
-    # 2. Emerging Product Codes identified from STEP 5
-    # ------------------------------------------------------------------------------
-    
-    emerging_codes_step7 = [
-        "QNP",
-        "OLZ",
-        "QYE",
-        "SBF"
-    ]
-    
-    # ------------------------------------------------------------------------------
-    # 3. Validate that all emerging codes exist in the dataset
-    # ------------------------------------------------------------------------------
-    
-    available_codes = set(
-        step7_df["product_code"].dropna().astype(str)
+    step7_df = df_integrated.copy()
+    step7_df["decision_year"] = pd.to_numeric(
+        step7_df["decision_year"],
+        errors="coerce"
     )
     
-    missing_codes = [
-        code
-        for code in emerging_codes_step7
-        if code not in available_codes
-    ]
+    step7_df = step7_df[
+        step7_df["decision_year"].notna()
+        & (step7_df["decision_year"] <= 2025)
+    ].copy()
     
-    if missing_codes:
-        print(
-            "WARNING: These emerging Product Codes were not found:",
-            missing_codes
-        )
+    step7_df["decision_year"] = (
+        step7_df["decision_year"]
+        .astype(int)
+    )
     
     # ------------------------------------------------------------------------------
-    # 4. Annual FDA activity
+    # 2. Derive emerging Product Codes directly from STEP 5
     # ------------------------------------------------------------------------------
+    
+    emerging_codes_step7 = (
+        product_profile.loc[
+            product_profile["activity_profile"] == "Recent-emerging signal",
+            "product_code"
+        ]
+        .dropna()
+        .astype(str)
+        .drop_duplicates()
+        .tolist()
+    )
+    
+    # ------------------------------------------------------------------------------
+    # 3. Calculate annual activity
+    # ------------------------------------------------------------------------------
+    
+    trajectory_years = [2021, 2022, 2023, 2024, 2025]
     
     emerging_trajectory = (
         step7_df[
-            step7_df["product_code"].isin(emerging_codes_step7)
+            step7_df["product_code"].astype(str).isin(emerging_codes_step7)
+            & step7_df["decision_year"].isin(trajectory_years)
         ]
         .groupby(
             ["product_code", "decision_year"]
@@ -1481,70 +1723,64 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         .unstack(fill_value=0)
     )
     
-    # Ensure every completed year is represented
-    for year in range(2021, 2026):
+    for year in trajectory_years:
         if year not in emerging_trajectory.columns:
             emerging_trajectory[year] = 0
     
-    emerging_trajectory = emerging_trajectory[
-        [2021, 2022, 2023, 2024, 2025]
-    ]
-    
-    # ------------------------------------------------------------------------------
-    # 5. Calculate descriptive activity metrics
-    # ------------------------------------------------------------------------------
-    
-    emerging_trajectory["total_records_2021_2025"] = (
-        emerging_trajectory[
-            [2021, 2022, 2023, 2024, 2025]
-        ].sum(axis=1)
-    )
-    
-    emerging_trajectory["active_years"] = (
-        emerging_trajectory[
-            [2021, 2022, 2023, 2024, 2025]
+    if emerging_trajectory.empty:
+        emerging_trajectory = pd.DataFrame(
+            columns=trajectory_years
+        )
+        emerging_trajectory.index.name = "product_code"
+    else:
+        emerging_trajectory = emerging_trajectory[
+            trajectory_years
         ]
-        .gt(0)
-        .sum(axis=1)
-    )
-    
-    emerging_trajectory["peak_year"] = (
-        emerging_trajectory[
-            [2021, 2022, 2023, 2024, 2025]
-        ]
-        .idxmax(axis=1)
-    )
-    
-    emerging_trajectory["peak_activity"] = (
-        emerging_trajectory[
-            [2021, 2022, 2023, 2024, 2025]
-        ]
-        .max(axis=1)
-    )
     
     # ------------------------------------------------------------------------------
-    # 6. Calculate recent-year changes
+    # 4. Calculate descriptive trajectory metrics
     # ------------------------------------------------------------------------------
     
-    emerging_trajectory["change_2023_to_2024"] = (
-        emerging_trajectory[2024]
-        - emerging_trajectory[2023]
-    )
+    if not emerging_trajectory.empty:
     
-    emerging_trajectory["change_2024_to_2025"] = (
-        emerging_trajectory[2025]
-        - emerging_trajectory[2024]
-    )
+        emerging_trajectory["total_records_2021_2025"] = (
+            emerging_trajectory[trajectory_years]
+            .sum(axis=1)
+            .astype(int)
+        )
+    
+        emerging_trajectory["active_years"] = (
+            emerging_trajectory[trajectory_years]
+            .gt(0)
+            .sum(axis=1)
+            .astype(int)
+        )
+    
+        emerging_trajectory["peak_year"] = (
+            emerging_trajectory[trajectory_years]
+            .idxmax(axis=1)
+            .astype(int)
+        )
+    
+        emerging_trajectory["peak_activity"] = (
+            emerging_trajectory[trajectory_years]
+            .max(axis=1)
+            .astype(int)
+        )
+    
+        emerging_trajectory["change_2024_to_2025"] = (
+            emerging_trajectory[2025]
+            - emerging_trajectory[2024]
+        ).astype(int)
     
     # ------------------------------------------------------------------------------
-    # 7. Add device context
+    # 5. Add device context
     # ------------------------------------------------------------------------------
     
     device_context_step7 = (
         step7_df[
-            step7_df["product_code"].isin(emerging_codes_step7)
-        ]
-        [
+            step7_df["product_code"].astype(str).isin(emerging_codes_step7)
+        ][
             [
                 "product_code",
                 "generic_device_name",
@@ -1555,339 +1791,743 @@ Radiology maintains a dominant market share at **76.6%** of total FDA AI clearan
         .drop_duplicates("product_code")
     )
     
-    emerging_trajectory_output = (
-        emerging_trajectory
-        .reset_index()
-        .merge(
-            device_context_step7,
-            on="product_code",
-            how="left",
-            validate="one_to_one"
+    if emerging_trajectory.empty:
+        emerging_trajectory_output = pd.DataFrame(
+            columns=[
+                "product_code",
+                "generic_device_name",
+                "medical_specialty",
+                "device_class",
+                *trajectory_years,
+                "total_records_2021_2025",
+                "active_years",
+                "peak_year",
+                "peak_activity",
+                "change_2024_to_2025"
+            ]
         )
-    )
+    else:
+        emerging_trajectory_output = (
+            emerging_trajectory
+            .reset_index()
+            .merge(
+                device_context_step7,
+                on="product_code",
+                how="left",
+                validate="one_to_one"
+            )
+        )
+    
+        output_columns_step7 = [
+            "product_code",
+            "generic_device_name",
+            "medical_specialty",
+            "device_class",
+            *trajectory_years,
+            "total_records_2021_2025",
+            "active_years",
+            "peak_year",
+            "peak_activity",
+            "change_2024_to_2025"
+        ]
+    
+        emerging_trajectory_output = (
+            emerging_trajectory_output[output_columns_step7]
+            .sort_values(
+                "total_records_2021_2025",
+                ascending=False
+            )
+            .reset_index(drop=True)
+        )
     
     # ------------------------------------------------------------------------------
-    # 8. Reorder columns
-    # ------------------------------------------------------------------------------
-    
-    output_columns_step7 = [
-        "product_code",
-        "generic_device_name",
-        "medical_specialty",
-        "device_class",
-        2021,
-        2022,
-        2023,
-        2024,
-        2025,
-        "total_records_2021_2025",
-        "active_years",
-        "peak_year",
-        "peak_activity",
-        "change_2023_to_2024",
-        "change_2024_to_2025"
-    ]
-    
-    emerging_trajectory_output = emerging_trajectory_output[
-        output_columns_step7
-    ]
-    
-    # ------------------------------------------------------------------------------
-    # 9. Display results
+    # 6. Display results
     # ------------------------------------------------------------------------------
     
     print("=== STEP 7: EMERGING SIGNAL TRAJECTORY ===")
     
-    print(
-        emerging_trajectory_output
-        .sort_values(
-            "total_records_2021_2025",
-            ascending=False
+    if emerging_trajectory_output.empty:
+        print("No Product Codes are currently classified as recent-emerging signals.")
+    else:
+        print(
+            emerging_trajectory_output
+            .to_string(index=False)
         )
-        .to_string(index=False)
-    )
     
     # ------------------------------------------------------------------------------
-    # 10. Analytical checks
+    # 7. Analytical checks
     # ------------------------------------------------------------------------------
     
     print("\n=== STEP 7: ANALYTICAL CHECKS ===")
     
-    for _, row in emerging_trajectory_output.iterrows():
-    
-        print(
-            f"{row['product_code']}: "
-            f"{row[2021]} → {row[2022]} → {row[2023]} → "
-            f"{row[2024]} → {row[2025]} | "
-            f"Total={row['total_records_2021_2025']} | "
-            f"Active years={row['active_years']}"
-        )
+    if emerging_trajectory_output.empty:
+        print("No emerging signal trajectories are available.")
+    else:
+        for _, row in emerging_trajectory_output.iterrows():
+            print(
+                f"{row['product_code']}: "
+                f"{int(row[2021])} → {int(row[2022])} → "
+                f"{int(row[2023])} → {int(row[2024])} → "
+                f"{int(row[2025])} | "
+                f"Total={int(row['total_records_2021_2025'])} | "
+                f"Active years={int(row['active_years'])}"
+            )
     
     # ------------------------------------------------------------------------------
-    # 11. Analytical boundary
+    # 8. Analytical boundary
     # ------------------------------------------------------------------------------
     
     print("\n=== ANALYTICAL BOUNDARY ===")
-    
     print(
-        "This analysis validates observed FDA activity trajectories. "
+        "These trajectories describe observed FDA record activity only. "
         "Increasing or sustained activity does not by itself establish "
         "market growth, physician adoption, clinical effectiveness, "
         "or commercial opportunity."
     )
     ```
     
-- STEP 8: Dashboard — FDA AI Device Activity
+- STEP 8: Dashboard — FDA AI/ML Medical Device Activity
     
     ```python
+    # ==============================================================================
+    # STEP 8: Executive Dashboard — FDA AI/ML Medical Device Activity
+    # ==============================================================================
+    # Purpose:
+    # Present the validated analytical findings in a dashboard focused on
+    # observed FDA regulatory activity.
+    #
     # Analytical principles:
     # - Uses observed FDA records only.
-    # - 2026 is excluded because it is incomplete.
-    # - No new subjective scoring is introduced.
-    # - Emerging signals use the criteria established in STEP 5.
-    # - Functional terms are NOT presented as official FDA categories.
+    # - 2026 is excluded because it is an incomplete year.
+    # - All dashboard metrics are calculated directly from df_integrated.
+    # - Recent-emerging signals follow the predefined activity-profile criteria.
+    # - Medical specialty values are displayed using FDA source codes.
+    # - Regulatory activity does not represent market demand, adoption,
+    #   clinical effectiveness, or commercial success.
     # ==============================================================================
     
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
-    from IPython.display import HTML, display
     
     # ==============================================================================
-    # 0. Data Pipeline Setup
+    # 1. Validate source structure
     # ==============================================================================
-    np.random.seed(42)
-    years = list(range(2015, 2026))
     
-    # 1) Yearly Clearance Trend by Class
-    df_trend = pd.DataFrame({
-        'Year': np.repeat(years, 3),
-        'Class': ['Class I', 'Class II', 'Class III'] * len(years),
-        'Count': np.random.randint(10, 80, len(years)*3)
-    })
-    
-    # 2) Medical Specialty Clearances & Share
-    specialties = [
-        'Radiology (Diagnostic & Interventional)',
-        'Cardiology (Cardiovascular Devices)',
-        'Neurology (Neurological Systems)',
-        'Anesthesiology & Critical Care',
-        'General & Plastic Surgery',
-        'Ophthalmic & Optometry Services',
-        'Pathology & Clinical Laboratory'
-    ]
-    counts = [350, 220, 150, 95, 80, 60, 45]
-    total_spec_count = sum(counts)
-    shares = [round((c / total_spec_count) * 100, 1) for c in counts]
-    
-    df_spec = pd.DataFrame({
-        'Specialty': specialties,
-        'Count': counts,
-        'Share': shares
-    })
-    
-    def wrap_text(text, width=32):
-        import textwrap
-        return '<br>'.join(textwrap.wrap(text, width=width))
-    
-    df_spec['Specialty_wrapped'] = df_spec['Specialty'].apply(lambda x: wrap_text(x, 32))
-    
-    # 3) Emerging Signal Data (2023-2025)
-    df_emerging = pd.DataFrame({
-        'Code': ['QNP', 'OLZ', 'QYE', 'SBF', 'OLO'],
-        'Name': ['AI Mammography', 'ML Cardio Diagnostic', 'Radiology Triaging', 'Surgical Navigation', 'Ophthalmic AI Screen'],
-        'Growth': [340, 280, 210, 175, 140]
-    })
-    df_emerging['Full_Name'] = df_emerging['Code'] + " (" + df_emerging['Name'] + ")"
-    df_emerging['Wrapped_Name'] = df_emerging['Full_Name'].apply(lambda x: wrap_text(x, 15))
-    
-    # ==============================================================================
-    # 1. Design System
-    # ==============================================================================
-    COLOR_PRIMARY = '#005A9C'
-    COLOR_SECONDARY = '#00A896'
-    COLOR_ACCENT = '#E63946'
-    COLOR_BG = '#F8FAFC'
-    COLOR_CARD_BG = '#FFFFFF'
-    COLOR_TEXT = '#1E293B'
-    COLOR_GRID = '#E2E8F0'
-    
-    # ==============================================================================
-    # 2. KPI Cards
-    # ==============================================================================
-    kpis = [
-        {"title": "Total AI Clearances", "value": "1,000+", "sub": "Cumulative (2015-2025)"},
-        {"title": "Peak YoY Growth", "value": "+42.5%", "sub": "Highest Surge in 2023"},
-        {"title": "Top Specialty Share", "value": "35.0%", "sub": "Radiology Dominance"},
-        {"title": "Top Emerging Signal", "value": "QNP (+340%)", "sub": "AI Mammography Systems"}
+    required_columns = [
+        "product_code",
+        "submission_number",
+        "decision_year",
+        "medical_specialty",
+        "generic_device_name",
+        "device_class"
     ]
     
-    kpi_html = f"""
-    <div style="background-color: {COLOR_BG}; padding: 15px 20px 5px 20px; font-family: Arial, sans-serif;">
-        <div style="margin-bottom: 15px;">
-            <h2 style="margin: 0; color: {COLOR_TEXT}; font-size: 20px; font-weight: bold;">FDA AI Medical Devices Analytics Dashboard</h2>
-            <p style="margin: 3px 0 0 0; color: #64748B; font-size: 12px;">Comprehensive Analysis of Clearances, Specialty Distributions, and High-Growth Technology Signals</p>
-        </div>
-        <div style="display: flex; gap: 15px; justify-content: space-between;">
-    """
+    missing_columns = [
+        column
+        for column in required_columns
+        if column not in df_integrated.columns
+    ]
     
-    for kpi in kpis:
-        kpi_html += f"""
-            <div style="flex: 1; background: {COLOR_CARD_BG}; border: 1px solid {COLOR_GRID}; border-radius: 8px; padding: 12px 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                <div style="font-size: 11px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">{kpi['title']}</div>
-                <div style="font-size: 24px; font-weight: 700; color: {COLOR_PRIMARY}; line-height: 1.1; margin-bottom: 6px;">{kpi['value']}</div>
-                <div style="font-size: 10px; color: #94A3B8;">{kpi['sub']}</div>
-            </div>
-        """
-    
-    kpi_html += """
-        </div>
-    </div>
-    """
-    
-    display(HTML(kpi_html))
-    
-    # ==============================================================================
-    # 3. Subplot Layout
-    # ==============================================================================
-    fig = make_subplots(
-        rows=2, cols=2,
-        row_heights=[0.5, 0.5],
-        column_widths=[0.52, 0.48],
-        specs=[
-            [{"type": "xy"}, {"type": "xy"}],
-            [{"type": "xy"}, {"type": "scatter"}]
-        ],
-        subplot_titles=(
-            "<b>1. Annual FDA AI Clearances Trend (by Risk Class)</b>",
-            "<b>2. FDA Clearances & Market Share by Medical Specialty</b>",
-            "<b>3. High-Growth Emerging Signals (Growth Rate %, 2023-2025)</b>",
-            "<b>4. Strategic Insights & Executive Summary</b>"
-        ),
-        vertical_spacing=0.18,
-        horizontal_spacing=0.15
-    )
-    
-    # ------------------------------------------------------------------------------
-    # Chart 1: Annual Trend
-    # ------------------------------------------------------------------------------
-    colors_class = {'Class I': '#CBD5E1', 'Class II': COLOR_PRIMARY, 'Class III': '#38BDF8'}
-    for cls in ['Class I', 'Class II', 'Class III']:
-        df_cls = df_trend[df_trend['Class'] == cls]
-        fig.add_trace(
-            go.Scatter(
-                x=df_cls['Year'], y=df_cls['Count'],
-                name=cls, mode='lines', stackgroup='one',
-                showlegend=True,
-                line=dict(width=0.5, color=colors_class[cls]),
-                hovertemplate="<b>Year: %{x}</b><br>" + cls + ": %{y} cases<extra></extra>"
-            ),
-            row=1, col=1
+    if missing_columns:
+        raise KeyError(
+            f"Required columns are missing from df_integrated: {missing_columns}"
         )
     
-    # ------------------------------------------------------------------------------
-    # Chart 2: Specialty Share
-    # ------------------------------------------------------------------------------
-    fig.add_trace(
-        go.Bar(
-            x=df_spec['Count'],
-            y=df_spec['Specialty_wrapped'],
-            orientation='h',
-            showlegend=False,
-            marker=dict(color=COLOR_PRIMARY),
-            text=[f"{c} ({s}%)" for c, s in zip(df_spec['Count'], df_spec['Share'])],
-            textposition='outside',
-            cliponaxis=False,
-            hovertemplate="<b>%{y}</b><br>Clearances: %{x} cases<extra></extra>"
-        ),
-        row=1, col=2
+    # ==============================================================================
+    # 2. Prepare completed-year analysis data
+    # ==============================================================================
+    
+    dashboard_df = df_integrated.copy()
+    
+    dashboard_df["decision_year"] = pd.to_numeric(
+        dashboard_df["decision_year"],
+        errors="coerce"
     )
     
-    # ------------------------------------------------------------------------------
-    # Chart 3: Emerging Signals
-    # ------------------------------------------------------------------------------
-    fig.add_trace(
-        go.Bar(
-            x=df_emerging['Wrapped_Name'],
-            y=df_emerging['Growth'],
-            showlegend=False,
-            marker=dict(
-                color=[COLOR_ACCENT if g > 200 else COLOR_SECONDARY for g in df_emerging['Growth']],
-                cornerradius=4
+    dashboard_df = dashboard_df[
+        dashboard_df["decision_year"].notna()
+        & (dashboard_df["decision_year"] <= 2025)
+    ].copy()
+    
+    dashboard_df["decision_year"] = (
+        dashboard_df["decision_year"].astype(int)
+    )
+    
+    total_completed_records = int(len(dashboard_df))
+    
+    analysis_start_year = int(
+        dashboard_df["decision_year"].min()
+    )
+    
+    analysis_end_year = int(
+        dashboard_df["decision_year"].max()
+    )
+    
+    # ==============================================================================
+    # 3. Annual activity
+    # ==============================================================================
+    
+    annual_activity = (
+        dashboard_df
+        .groupby("decision_year")
+        .size()
+        .reset_index(name="record_count")
+        .sort_values("decision_year")
+    )
+    
+    # ==============================================================================
+    # 4. Medical specialty concentration
+    # ==============================================================================
+    
+    specialty_dashboard = (
+        dashboard_df[
+            dashboard_df["medical_specialty"].notna()
+            & dashboard_df["medical_specialty"]
+            .astype(str)
+            .str.strip()
+            .ne("")
+        ]
+        .groupby("medical_specialty")
+        .size()
+        .reset_index(name="record_count")
+        .sort_values(
+            "record_count",
+            ascending=False
+        )
+    )
+    
+    specialty_assigned_total = int(
+        specialty_dashboard["record_count"].sum()
+    )
+    
+    if specialty_assigned_total > 0:
+        specialty_dashboard["record_share_pct"] = (
+            specialty_dashboard["record_count"]
+            / specialty_assigned_total
+            * 100
+        ).round(1)
+    else:
+        specialty_dashboard["record_share_pct"] = 0.0
+    
+    specialty_display = (
+        specialty_dashboard
+        .head(6)
+        .sort_values(
+            "record_count",
+            ascending=True
+        )
+        .copy()
+    )
+    
+    if specialty_dashboard.empty:
+        top_specialty = "N/A"
+        top_specialty_count = 0
+        top_specialty_share = 0.0
+    else:
+        top_specialty_row = specialty_dashboard.iloc[0]
+        top_specialty = str(top_specialty_row["medical_specialty"])
+        top_specialty_count = int(top_specialty_row["record_count"])
+        top_specialty_share = float(top_specialty_row["record_share_pct"])
+    
+    # ==============================================================================
+    # 5. Build product-level activity profile
+    # ==============================================================================
+    
+    trajectory_years = [2021, 2022, 2023, 2024, 2025]
+    
+    annual_product_activity = (
+        dashboard_df
+        .groupby(["product_code", "decision_year"])
+        .size()
+        .unstack(fill_value=0)
+    )
+    
+    for year in trajectory_years:
+        if year not in annual_product_activity.columns:
+            annual_product_activity[year] = 0
+    
+    annual_product_activity = (
+        annual_product_activity[trajectory_years]
+        .copy()
+    )
+    
+    annual_product_activity.index.name = "product_code"
+    annual_product_activity = annual_product_activity.reset_index()
+    
+    product_profile = (
+        dashboard_df
+        .groupby("product_code")
+        .agg(
+            total_records=("submission_number", "count"),
+            first_year=("decision_year", "min"),
+            last_year=("decision_year", "max"),
+            generic_device_name=("generic_device_name", "first"),
+            medical_specialty=("medical_specialty", "first"),
+            device_class=("device_class", "first")
+        )
+        .reset_index()
+    )
+    
+    product_profile = (
+        product_profile
+        .merge(
+            annual_product_activity,
+            on="product_code",
+            how="left",
+            validate="one_to_one"
+        )
+    )
+    
+    product_profile["recent_3y_records"] = (
+        product_profile[[2023, 2024, 2025]].sum(axis=1)
+    )
+    
+    product_profile["active_years_2021_2025"] = (
+        product_profile[trajectory_years].gt(0).sum(axis=1)
+    )
+    
+    # ==============================================================================
+    # 6. Apply predefined recent-emerging activity criteria
+    # ==============================================================================
+    
+    product_profile["activity_profile"] = np.select(
+        [
+            (
+                (product_profile["recent_3y_records"] >= 5)
+                & (product_profile["first_year"] >= 2021)
+                & (product_profile["active_years_2021_2025"] >= 2)
             ),
-            text=[f"+{g}%" for g in df_emerging['Growth']],
-            textposition='outside',
-            cliponaxis=False,
-            hovertemplate="<b>Code: %{x}</b><br>Growth Rate: %{y}%<extra></extra>"
-        ),
-        row=2, col=1
+            (
+                (product_profile["recent_3y_records"] >= 5)
+                & (product_profile["first_year"] < 2021)
+                & (product_profile["active_years_2021_2025"] >= 3)
+            )
+        ],
+        [
+            "Recent-emerging signal",
+            "Established recent activity"
+        ],
+        default="Lower-volume / insufficient signal"
     )
     
-    # ------------------------------------------------------------------------------
-    # Strategic Executive Summary Box
-    # ------------------------------------------------------------------------------
-    summary_text = (
-        "<b>Key Takeaways & Strategic Implications:</b><br><br>"
-        "• <b>Market Acceleration:</b> FDA AI/ML clearances show<br>"
-        "  sustained growth, dominated by Class II software.<br><br>"
-        "• <b>Radiology Dominance:</b> Radiology accounts for<br>"
-        "  <b>35.0%</b> of clearances, acting as the primary baseline.<br><br>"
-        "• <b>Technology Shift:</b> QNP (+340%) and OLZ (+280%)<br>"
-        "  signal a move toward automated triage/screening."
+    emerging_codes = (
+        product_profile.loc[
+            product_profile["activity_profile"] == "Recent-emerging signal",
+            "product_code"
+        ]
+        .dropna()
+        .astype(str)
+        .drop_duplicates()
+        .tolist()
+    )
+    
+    # ==============================================================================
+    # 7. Prepare emerging-signal trajectory data
+    # ==============================================================================
+    
+    trajectory_dashboard = (
+        product_profile[
+            product_profile["product_code"]
+            .astype(str)
+            .isin(emerging_codes)
+        ]
+        .copy()
+    )
+    
+    if not trajectory_dashboard.empty:
+        trajectory_dashboard["total_records"] = (
+            trajectory_dashboard[trajectory_years]
+            .sum(axis=1)
+            .astype(int)
+        )
+    
+        trajectory_dashboard["active_years"] = (
+            trajectory_dashboard[trajectory_years]
+            .gt(0)
+            .sum(axis=1)
+            .astype(int)
+        )
+    
+        trajectory_dashboard["peak_year"] = (
+            trajectory_dashboard[trajectory_years]
+            .idxmax(axis=1)
+            .astype(int)
+        )
+    
+        trajectory_dashboard["peak_activity"] = (
+            trajectory_dashboard[trajectory_years]
+            .max(axis=1)
+            .astype(int)
+        )
+    
+        trajectory_dashboard = (
+            trajectory_dashboard
+            .sort_values("total_records", ascending=False)
+        )
+    
+    # ==============================================================================
+    # 8. Design system
+    # ==============================================================================
+    
+    COLOR_NAVY = "#17324D"
+    COLOR_BLUE = "#176B87"
+    COLOR_TEAL = "#218C8D"
+    COLOR_BLUE_LIGHT = "#5B84A4"
+    COLOR_AMBER = "#C98200"
+    
+    COLOR_TEXT = "#243B53"
+    COLOR_MUTED = "#627D98"
+    COLOR_GRID = "#DCE5EC"
+    COLOR_BACKGROUND = "#F5F8FB"
+    COLOR_WHITE = "#FFFFFF"
+    COLOR_BORDER = "#D7E1E8"
+    
+    SIGNAL_COLORS = [
+        COLOR_BLUE,
+        COLOR_BLUE_LIGHT,
+        COLOR_TEAL,
+        COLOR_AMBER
+    ]
+    
+    # ==============================================================================
+    # 9. Dashboard layout
+    # ==============================================================================
+    
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        specs=[
+            [{"type": "xy"}, {"type": "xy"}],
+            [{"type": "xy"}, {"type": "table"}]
+        ],
+        row_heights=[0.44, 0.44],
+        column_widths=[0.48, 0.48],
+        vertical_spacing=0.22,
+        horizontal_spacing=0.08,
+        subplot_titles=(
+            "<b>Annual Activity Trend</b><br><span style='font-size:10px;color:#627D98;font-weight:normal;'>FDA records by decision year</span>",
+            "<b>Specialty Concentration</b><br><span style='font-size:10px;color:#627D98;font-weight:normal;'>Share of records with an assigned specialty</span>",
+            "<b>Recent-Emerging Signal Trajectories</b><br><span style='font-size:10px;color:#627D98;font-weight:normal;'>Annual FDA records for identified Product Codes</span>",
+            "<b>Emerging Signal Summary</b><br><span style='font-size:10px;color:#627D98;font-weight:normal;'>Activity profile of identified Product Codes</span>"
+        )
+    )
+    
+    # ==============================================================================
+    # 10. Chart 1 — Annual activity trend
+    # ==============================================================================
+    
+    fig.add_trace(
+        go.Scatter(
+            x=annual_activity["decision_year"],
+            y=annual_activity["record_count"],
+            mode="lines+markers",
+            line=dict(color=COLOR_BLUE, width=3),
+            marker=dict(color=COLOR_BLUE, size=6),
+            hovertemplate="<b>%{x}</b><br>FDA records: %{y:,}<extra></extra>",
+            showlegend=False
+        ),
+        row=1,
+        col=1
+    )
+    
+    # ==============================================================================
+    # 11. Chart 2 — Specialty concentration
+    # ==============================================================================
+    
+    specialty_text = [
+        f"<b>{int(count):,}</b> ({share:.1f}%)"
+        for count, share in zip(
+            specialty_display["record_count"],
+            specialty_display["record_share_pct"]
+        )
+    ]
+    
+    fig.add_trace(
+        go.Bar(
+            x=specialty_display["record_count"],
+            y=specialty_display["medical_specialty"].astype(str),
+            orientation="h",
+            marker=dict(color=COLOR_TEAL),
+            text=specialty_text,
+            textposition="outside",
+            cliponaxis=False,
+            showlegend=False,
+            hovertemplate="<b>%{y}</b><br>FDA records: %{x:,}<extra></extra>"
+        ),
+        row=1,
+        col=2
+    )
+    
+    # ==============================================================================
+    # 12. Chart 3 — Recent-emerging signal trajectories
+    # ==============================================================================
+    
+    for index, code in enumerate(
+        trajectory_dashboard["product_code"].astype(str).tolist()
+    ):
+        signal_row = trajectory_dashboard[
+            trajectory_dashboard["product_code"].astype(str) == code
+        ].iloc[0]
+    
+        line_color = SIGNAL_COLORS[index % len(SIGNAL_COLORS)]
+        y_values = [int(signal_row[year]) for year in trajectory_years]
+    
+        fig.add_trace(
+            go.Scatter(
+                x=trajectory_years,
+                y=y_values,
+                mode="lines+markers+text",
+                line=dict(color=line_color, width=2.5),
+                marker=dict(color=line_color, size=6),
+                text=["" if year != 2025 else f"<b>{code}</b>" for year in trajectory_years],
+                textposition="middle right",
+                cliponaxis=False,
+                showlegend=False,
+                hovertemplate=(
+                    f"<b>{code}</b><br>"
+                    "Year: %{x}<br>"
+                    "FDA records: %{y:,}"
+                    "<extra></extra>"
+                )
+            ),
+            row=2,
+            col=1
+        )
+    
+    # ==============================================================================
+    # 13. Chart 4 — Emerging signal summary
+    # ==============================================================================
+    
+    if trajectory_dashboard.empty:
+        table_values = [[], [], [], [], []]
+    else:
+        table_values = [
+            trajectory_dashboard["product_code"].astype(str).tolist(),
+            trajectory_dashboard["total_records"].astype(int).tolist(),
+            trajectory_dashboard["active_years"].astype(int).tolist(),
+            trajectory_dashboard["peak_year"].astype(int).tolist(),
+            trajectory_dashboard["peak_activity"].astype(int).tolist()
+        ]
+    
+    fig.add_trace(
+        go.Table(
+            columnwidth=[100, 100, 100, 100, 100],
+            header=dict(
+                values=[
+                    "<b>Product Code</b>",
+                    "<b>Total Records</b>",
+                    "<b>Active Years</b>",
+                    "<b>Peak Year</b>",
+                    "<b>Peak Activity</b>"
+                ],
+                align="center",
+                fill_color=COLOR_NAVY,
+                font=dict(color=COLOR_WHITE, size=11),
+                height=32,
+                line=dict(color=COLOR_WHITE, width=1)
+            ),
+            cells=dict(
+                values=table_values,
+                align="center",
+                fill_color=COLOR_WHITE,
+                font=dict(color=COLOR_TEXT, size=11),
+                height=32,
+                line=dict(color=COLOR_BORDER, width=1)
+            )
+        ),
+        row=2,
+        col=2
+    )
+    
+    # ==============================================================================
+    # 14. Dashboard title & Subtitle
+    # ==============================================================================
+    
+    fig.add_annotation(
+        x=0.5,
+        y=1.30,
+        xref="paper",
+        yref="paper",
+        text="<b>FDA AI/ML Medical Device Activity</b>",
+        showarrow=False,
+        xanchor="center",
+        yanchor="middle",
+        font=dict(family="Arial", size=24, color=COLOR_NAVY)
     )
     
     fig.add_annotation(
-        dict(
-            x=0.05, y=0.5,
-            xref="x4", yref="y4",
-            text=summary_text,
-            showarrow=False,
-            align="left",
-            font=dict(size=11, color=COLOR_TEXT, family="Arial"),
-            bgcolor=COLOR_CARD_BG,
-            bordercolor=COLOR_GRID,
-            borderwidth=1,
-            borderpad=12
+        x=0.5,
+        y=1.26,
+        xref="paper",
+        yref="paper",
+        text=(
+            f"Observed FDA regulatory activity through {analysis_end_year}  •  "
+            f"{analysis_start_year}–{analysis_end_year} analysis window  •  "
+            f"2026 excluded as incomplete"
         ),
-        row=2, col=2
+        showarrow=False,
+        xanchor="center",
+        yanchor="middle",
+        font=dict(family="Arial", size=11, color=COLOR_MUTED)
     )
     
     # ==============================================================================
-    # 4. Layout Formatting
+    # 15. KPI cards
     # ==============================================================================
-    fig.update_layout(
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor='#FFFFFF',
-        font=dict(family="Arial, sans-serif", size=11, color=COLOR_TEXT),
-        height=750,
-        margin=dict(l=40, r=40, t=40, b=40),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="left",
-            x=0.01,
-            font=dict(size=11)
+    
+    kpi_cards = [
+        (
+            0.16,
+            "COMPLETED-YEAR RECORDS",
+            f"{total_completed_records:,}",
+            "Observed FDA records"
+        ),
+        (
+            0.50,
+            "TOP SPECIALTY SHARE",
+            f"{top_specialty_share:.1f}%",
+            f"{top_specialty} • assigned specialty records"
+        ),
+        (
+            0.84,
+            "RECENT-EMERGING SIGNALS",
+            f"{len(emerging_codes)}",
+            "Product Codes meeting predefined criteria"
         )
+    ]
+    
+    for x_position, label, value, context in kpi_cards:
+        fig.add_annotation(
+            x=x_position,
+            y=1.13,
+            xref="paper",
+            yref="paper",
+            text=(
+                f"<span style='font-size:22px;font-weight:800;color:{COLOR_NAVY};'>{value}</span><br>"
+                f"<span style='font-size:10px;font-weight:700;color:{COLOR_TEXT};letter-spacing:0.5px;'>{label}</span><br>"
+                f"<span style='font-size:9px;color:{COLOR_MUTED};'>{context}</span>"
+            ),
+            showarrow=False,
+            xanchor="center",
+            yanchor="bottom",
+            align="center",
+            width=230,
+            height=58,
+            bgcolor=COLOR_WHITE,
+            bordercolor=COLOR_BORDER,
+            borderwidth=1,
+            borderpad=6,
+            font=dict(family="Arial", color=COLOR_TEXT)
+        )
+    
+    # ==============================================================================
+    # 16. Axis formatting
+    # ==============================================================================
+    
+    fig.update_xaxes(
+        title_text="Decision Year",
+        showgrid=True,
+        gridcolor=COLOR_GRID,
+        zeroline=False,
+        tickfont=dict(size=9, color=COLOR_MUTED),
+        title_font=dict(size=10, color=COLOR_MUTED),
+        row=1,
+        col=1
     )
     
-    # Axis Configuration
-    fig.update_xaxes(showgrid=True, gridcolor=COLOR_GRID, gridwidth=0.5, row=1, col=1)
-    fig.update_yaxes(title_text="Clearance Count", showgrid=True, gridcolor=COLOR_GRID, gridwidth=0.5, row=1, col=1)
+    fig.update_yaxes(
+        title_text="FDA Records",
+        showgrid=True,
+        gridcolor=COLOR_GRID,
+        zeroline=False,
+        tickfont=dict(size=9, color=COLOR_MUTED),
+        title_font=dict(size=10, color=COLOR_MUTED),
+        row=1,
+        col=1
+    )
     
-    fig.update_yaxes(autorange="reversed", showgrid=False, row=1, col=2)
-    fig.update_xaxes(title_text="Clearance Count (% Share)", showgrid=True, gridcolor=COLOR_GRID, gridwidth=0.5, row=1, col=2)
+    fig.update_xaxes(
+        title_text="FDA Records",
+        showgrid=True,
+        gridcolor=COLOR_GRID,
+        zeroline=False,
+        tickfont=dict(size=9, color=COLOR_MUTED),
+        title_font=dict(size=10, color=COLOR_MUTED),
+        row=1,
+        col=2
+    )
     
-    fig.update_xaxes(tickangle=0, row=2, col=1)
-    fig.update_yaxes(title_text="Growth Rate (%)", showgrid=True, gridcolor=COLOR_GRID, gridwidth=0.5, row=2, col=1)
+    fig.update_yaxes(
+        title_text="Medical Specialty Code",
+        showgrid=False,
+        tickfont=dict(size=10, color=COLOR_TEXT),
+        title_font=dict(size=10, color=COLOR_MUTED),
+        row=1,
+        col=2
+    )
     
-    fig.update_xaxes(visible=False, row=2, col=2)
-    fig.update_yaxes(visible=False, row=2, col=2)
+    fig.update_xaxes(
+        title_text="Decision Year",
+        dtick=1,
+        range=[2020.7, 2025.8],
+        showgrid=True,
+        gridcolor=COLOR_GRID,
+        zeroline=False,
+        tickfont=dict(size=9, color=COLOR_MUTED),
+        title_font=dict(size=10, color=COLOR_MUTED),
+        row=2,
+        col=1
+    )
     
-    # Subplot Title Font Styling
-    for annotation in fig['layout']['annotations']:
-        if "<b>" in annotation['text']:
-            annotation['font'] = dict(size=12, color=COLOR_TEXT)
+    fig.update_yaxes(
+        title_text="FDA Records",
+        dtick=1,
+        showgrid=True,
+        gridcolor=COLOR_GRID,
+        zeroline=False,
+        tickfont=dict(size=9, color=COLOR_MUTED),
+        title_font=dict(size=10, color=COLOR_MUTED),
+        row=2,
+        col=1
+    )
     
-    # Render Dashboard
+    # Subplot title positioning & spacing adjustment
+    for annotation in fig["layout"]["annotations"]:
+        if annotation["text"].startswith("<b>") and "style=" in annotation["text"]:
+            annotation["font"] = dict(family="Arial", size=13, color=COLOR_NAVY)
+            annotation["y"] = annotation["y"] + 0.02
+    
+    # ==============================================================================
+    # 17. Final visualization
+    # ==============================================================================
+    
+    fig.update_layout(
+        height=980,
+        paper_bgcolor=COLOR_BACKGROUND,
+        plot_bgcolor=COLOR_WHITE,
+        font=dict(family="Arial", size=10, color=COLOR_TEXT),
+        margin=dict(l=65, r=65, t=240, b=50),
+        showlegend=False
+    )
+    
+    # ==============================================================================
+    # 18. Render dashboard
+    # ==============================================================================
+    
     fig.show()
+    
+    # ==============================================================================
+    # 19. Dashboard validation summary
+    # ==============================================================================
+    
+    print("=" * 68)
+    print("STEP 8 — DASHBOARD DATA VALIDATION")
+    print("=" * 68)
+    print(f"Completed-year FDA records: {total_completed_records:,}")
+    print(f"Records with assigned medical specialty: {specialty_assigned_total:,}")
+    print(f"Top medical specialty: {top_specialty} ({top_specialty_count:,} records, {top_specialty_share:.1f}%)")
+    print(f"Recent-emerging Product Codes: {len(emerging_codes)}")
+    print("Trajectory analysis window: 2021–2025")
+    print("2026 excluded: incomplete year")
+    print("=" * 68)
     ```
