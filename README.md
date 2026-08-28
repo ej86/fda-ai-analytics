@@ -27,7 +27,7 @@ Radiology dominates the market with **76.6%** of total AI clearances, but **Gast
 
 Which medical device product codes show the highest growth acceleration beyond radiology, and where are the strategic opportunities for next-generation AI medical devices?
 
-**Links**: [[Google Colab Notebook](https://colab.research.google.com/drive/1cMLTit-60v9UJbse-iJIyx0EUE_iVF-1?usp=sharing)] | [Notion](https://app.notion.com/p/Identifying-Emerging-Signals-and-Growth-Acceleration-in-FDA-Approved-AI-Medical-Devices-3c8f89a0cfc4800b9139d27630b0944f?source=copy_link)]
+**Links**:[Google Colab Notebook](https://colab.research.google.com/drive/1cMLTit-60v9UJbse-iJIyx0EUE_iVF-1?usp=sharing)] | [Notion](https://app.notion.com/p/Identifying-Emerging-Signals-and-Growth-Acceleration-in-FDA-Approved-AI-Medical-Devices-3c8f89a0cfc4800b9139d27630b0944f?source=copy_link)]
 
 </aside>
 
